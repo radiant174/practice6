@@ -1,4 +1,6 @@
 const state = { data: null, filter: '全部' };
+let barChart = null;
+let pieChart = null;
 
 const loadData = async () => {
   $('#retry').hide();
@@ -18,6 +20,8 @@ const loadData = async () => {
     $('#status').hide();
     renderFilters(data);
     renderCards();
+    renderBarChart();
+    renderPieChart();
   } catch (error) {
     $('#status').removeClass('alert-warning').addClass('alert-danger')
       .text('加载失败：' + error.message).show();
@@ -67,6 +71,55 @@ const renderCards = () => {
         </div>
       </div>
     `);
+  });
+};
+
+const renderBarChart = () => {
+  const data = state.data;
+  const venues = visibleVenues();
+  if (barChart === null) {
+    barChart = echarts.init(document.querySelector('#bar-chart'));
+  }
+  barChart.setOption({
+    title: {
+      text: '各场地使用总量（单位：人次）',
+      subtext: '数据来源：' + data.source,
+      left: 'center'
+    },
+    tooltip: { trigger: 'axis' },
+    grid: { left: 70, right: 30, top: 100, bottom: 40 },
+    xAxis: { data: venues.map(v => v.name) },
+    yAxis: { name: '人次', min: 0 },
+    series: [{
+      name: '使用总量',
+      type: 'bar',
+      barMaxWidth: 56,
+      data: venues.map(v => totalOf(v))
+    }]
+  });
+};
+
+const renderPieChart = () => {
+  const data = state.data;
+  const venues = visibleVenues();
+  if (pieChart === null) {
+    pieChart = echarts.init(document.querySelector('#pie-chart'));
+  }
+  pieChart.setOption({
+    title: {
+      text: '各场地使用占比',
+      subtext: '数据来源：' + data.source,
+      left: 'center'
+    },
+    tooltip: { trigger: 'item' },
+    series: [{
+      name: '使用占比',
+      type: 'pie',
+      radius: '52%',
+      center: ['50%', '62%'],
+      data: venues.map(v => ({ value: totalOf(v), name: v.name })),
+      label: { formatter: '{b}: {d}%' }
+    }]
   });
 };
 
