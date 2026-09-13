@@ -1,5 +1,6 @@
 const state = { data: null };
 let barChart = null;
+let lineChart = null;
 
 const loadData = async () => {
   $('#status').text('加载中...').show();
@@ -18,6 +19,7 @@ const loadData = async () => {
     $('#status').hide();
     renderCards(data);
     renderBarChart(data);
+    renderLineChart(data);
   } catch (error) {
     $('#status').text('加载失败：' + error.message).show();
   }
@@ -62,5 +64,40 @@ const renderBarChart = (data) => {
     }))
   });
 };
+
+const renderLineChart = (data) => {
+  if (lineChart !== null) {
+    lineChart.destroy();
+  }
+  lineChart = new Chart(document.querySelector('#line-chart'), {
+    type: 'line',
+    data: {
+      labels: data.months,
+      datasets: data.series.map(s => ({
+        label: s.category,
+        data: s.counts,
+        borderWidth: 1,
+        tension: 0.3
+      }))
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        title: { display: true, text: '各品类借阅趋势（单位：册）' }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: { display: true, text: '册' }
+        }
+      }
+    }
+  });
+};
+
+window.addEventListener('resize', () => {
+  if (barChart) barChart.resize();
+});
 
 loadData();
