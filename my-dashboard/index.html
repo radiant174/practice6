@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>校园生活数据看板</title>
+  <link href="libs/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .chart-box { height: 360px; }
+    #status, #retry { display: none; }
+    #filters button.active { font-weight: 600; }
+  </style>
+</head>
+<body class="container py-4">
+  <header class="mb-3">
+    <h1 class="h3">校园生活数据看板</h1>
+    <p class="text-muted mb-1" id="sub-title">数据来源：本人校园生活记录</p>
+  </header>
+
+  <section class="d-flex flex-wrap gap-2 align-items-center mb-3">
+    <div id="filters" class="btn-group" role="group" aria-label="场地筛选"></div>
+    <button id="retry" type="button" class="btn btn-outline-secondary btn-sm">重新加载</button>
+  </section>
+
+  <p id="status" class="alert alert-warning"></p>
+
+  <section class="row g-3 mb-4" id="cards"></section>
+
+  <section class="row g-3">
+    <div class="col-lg-8">
+      <h2 class="h5">各场地一学年使用总量（ECharts柱状图 · 单位：人次）</h2>
+      <div id="bar-chart" class="chart-box"></div>
+    </div>
+    <div class="col-lg-4">
+      <h2 class="h5">各场地使用占比（ECharts饼图）</h2>
+      <div id="pie-chart" class="chart-box"></div>
+    </div>
+    <div class="col-12">
+      <h2 class="h5">各场地逐月使用趋势（Chart.js折线图 · 单位：人次）</h2>
+      <div class="chart-box"><canvas id="line-chart"></canvas></div>
+    </div>
+  </section>
+
+  <script src="libs/jquery-3.7.1.min.js"></script>
+  <script src="libs/bootstrap.bundle.min.js"></script>
+  <script src="libs/echarts.min.js"></script>
+  <script src="libs/chart.umd.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
