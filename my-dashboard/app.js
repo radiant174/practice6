@@ -1,6 +1,7 @@
 const state = { data: null, filter: '全部' };
 let barChart = null;
 let pieChart = null;
+let lineChart = null;
 
 const loadData = async () => {
   $('#retry').hide();
@@ -22,6 +23,7 @@ const loadData = async () => {
     renderCards();
     renderBarChart();
     renderPieChart();
+    renderLineChart();
   } catch (error) {
     $('#status').removeClass('alert-warning').addClass('alert-danger')
       .text('加载失败：' + error.message).show();
@@ -122,5 +124,46 @@ const renderPieChart = () => {
     }]
   });
 };
+
+const renderLineChart = () => {
+  const data = state.data;
+  const venues = visibleVenues();
+  if (lineChart !== null) {
+    lineChart.destroy();
+  }
+  lineChart = new Chart(document.querySelector('#line-chart'), {
+    type: 'line',
+    data: {
+      labels: data.months,
+      datasets: venues.map(v => ({
+        label: v.name,
+        data: v.usage,
+        borderWidth: 1,
+        tension: 0.3
+      }))
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        title: {
+          display: true,
+          text: ['各场地逐月使用趋势（单位：人次）', '数据来源：' + data.source]
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: { display: true, text: '人次' }
+        }
+      }
+    }
+  });
+};
+
+window.addEventListener('resize', () => {
+  if (barChart) barChart.resize();
+  if (pieChart) pieChart.resize();
+});
 
 loadData();
