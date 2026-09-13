@@ -1,4 +1,5 @@
 const state = { data: null };
+let barChart = null;
 
 const loadData = async () => {
   $('#status').text('加载中...').show();
@@ -13,11 +14,10 @@ const loadData = async () => {
       return;
     }
     state.data = data;
-    $('#sub-title').text(data.title + ' · 数据来源：课程统一数据集');
+    $('#sub-title').text(data.title + ' · ' + data.period + ' · 数据来源：' + data.source);
     $('#status').hide();
     renderCards(data);
     renderBarChart(data);
-    renderLineChart(data);
   } catch (error) {
     $('#status').text('加载失败：' + error.message).show();
   }
@@ -38,6 +38,28 @@ const renderCards = (data) => {
         </div>
       </div>
     `);
+  });
+};
+
+const renderBarChart = (data) => {
+  if (barChart === null) {
+    barChart = echarts.init(document.querySelector('#bar-chart'));
+  }
+  barChart.setOption({
+    title: { text: '各月各品类借阅量（单位：册）', left: 'center' },
+    tooltip: { trigger: 'axis' },
+    legend: { bottom: 0 },
+    grid: { left: 60, right: 30, top: 70, bottom: 70 },
+    xAxis: {
+      data: data.months,
+      axisLabel: { interval: 0, rotate: 30 }
+    },
+    yAxis: { name: '册' },
+    series: data.series.map(s => ({
+      name: s.category,
+      type: 'bar',
+      data: s.counts
+    }))
   });
 };
 
